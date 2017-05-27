@@ -1,6 +1,5 @@
 #!/usr/bin/python
 
-import array
 import sys
 
 # 6 planes red, blue, yellow, orange, green, white
@@ -56,13 +55,13 @@ def rotate(c, s, d):
     for i in range(0,4):
         n=neighbors[s][i]
         p=neighbors[n].index(s)
-        k.append([c[n][p], c[n][(p+4+d)%4]])
+        k.append([c[n][p], c[n][(p+1)%4]])
 
     for i in range(0,4):
         n=neighbors[s][i]
         p=neighbors[n].index(s)
-        c[n][p]=k[(i+4-d)%4][0]
-        c[n][(p+4+d)%4]=k[(i+4-d)%4][1]
+        c[n][p]=k[(i+4+d)%4][0]
+        c[n][(p+1)%4]=k[(i+4+d)%4][1]
 
     return
 
@@ -78,6 +77,11 @@ cube.append([5,5,5,5])
 # rotate all planes four times counter/clockwise
 showCube(cube)
 for s in range(0,5):
+    print("rotate side ", colors[s], " forth and back")
+    rotate(cube, s, -1)
+    showCube(cube)
+    rotate(cube, s, 1)
+    showCube(cube)
     for d in range(-1,3,2):
         print("rotate side ", colors[s], " by ", d)
         for i in range(0,4):
