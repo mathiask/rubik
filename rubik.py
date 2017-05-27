@@ -24,19 +24,21 @@ neighbors.append([0,4,3,1])
 colors=["R","B","Y","O","G","W"]
 
 def showSide(s) :
-    sys.stdout.write(colors[s[0]])
-    sys.stdout.write(colors[s[1]])
-    sys.stdout.write('\n')
-    sys.stdout.write(colors[s[3]])
-    sys.stdout.write(colors[s[2]])
     sys.stdout.write('\n')
     sys.stdout.flush()
 
 def showCube(c) :
     for i in range(0,6):
-        showSide(c[i])
-        if i<5:
-            sys.stdout.write('\n')
+        sys.stdout.write(colors[c[i][0]])
+        sys.stdout.write(colors[c[i][1]])
+        sys.stdout.write(' ')
+    sys.stdout.write('\n')
+
+    for i in range(0,6):
+        sys.stdout.write(colors[c[i][3]])
+        sys.stdout.write(colors[c[i][2]])
+        sys.stdout.write(' ')
+    sys.stdout.write('\n')
     print("==");
 
 # rotate a plane counter/clockwise
@@ -76,7 +78,7 @@ cube.append([5,5,5,5])
 # rotate all planes four times counter/clockwise
 showCube(cube)
 for s in range(0,5):
-    for d in range(-1,1,2):
+    for d in range(-1,3,2):
         print("rotate side ", colors[s], " by ", d)
         for i in range(0,4):
             rotate(cube, s, d)
