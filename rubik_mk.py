@@ -1,3 +1,7 @@
+import random
+
+random.seed()
+
 sides = ['front', 'back', 'left', 'right', 'top', 'bottom']
 
 def rotate(l, n):
@@ -27,7 +31,7 @@ class Cube:
         return '\n'.join([s + ': ' + '-'.join(self.d[s]) for s in sides])
 
     def __repr__(self):
-        return '<class Cube(' + str(self.d) + '>'
+        return '<class Cube(' + str(self.d) + ')>'
 
     def move(self, face, dir):
         self.d[face] = rotate(self.d[face], dir)
@@ -35,3 +39,10 @@ class Cube:
             x = rotate([self.d[s][i] for [s, i] in o], dir)
             for i in range(0, 4):
                 self.d[o[i][0]][o[i][1]] = x[i]
+
+    def shuffle(self, n):
+        for i in range(0, n):
+            s = random.choice(sides)
+            d = random.choice([-1, 1])
+            print '[', s, d, ']'
+            self.move(s, d)
