@@ -85,7 +85,7 @@ class Position:
             return [[s, d] for s in sides for d in [1, -1]]
         else:
             sx, dx = self.moves[-1]
-            return [[s, d] for s in sides for d in [1, -1] if s != sx or d != dx]
+            return [[s, d] for s in sides for d in [1, -1] if s != sx or d != -dx]
 
     def solved(self):
         return self.cube.solved()
