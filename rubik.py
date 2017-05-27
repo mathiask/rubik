@@ -77,9 +77,16 @@ class Cube:
         self.cube.append([5,5,5,5])
         return
 
+    def ordered(self):
+        for s in range(0,6):
+            for i in range(0,4):
+                if self.cube[s][i]!=s:
+                    return False
+        return True
+
     def test(self):
         self.show()
-        for s in range(0,5):
+        for s in range(0,6):
             print("rotate side ", colors[s], " back and forth")
             self.rotate(s, -1)
             self.show()
@@ -90,38 +97,34 @@ class Cube:
                 for i in range(0,4):
                     self.rotate(s, d)
                     self.show()
-        if ordered(self):
+        if self.ordered():
             print("ok")
         else:
             print("bad")
 
         return
 
-    def ordered(self):
-        for s in range(0,5):
-            for i in range(0,4):
-                if self.cube[s][i]!=s:
-                    return False
-        return True
-
     def shuffle(self, n):
         for i in range(0,n):
-            self.rotate(random.randint(0,5), 2*random.randint(0,1)-1)
+            s=random.randint(0,5)
+            d=2*random.randint(0,1)-1
+            print(colors[s], " ", d)
+            self.rotate(s, d)
         return
 
     def solve(self, depth):
-        if self.ordered():
-            self.show()
-            return True
-
         if depth==0:
+            if self.ordered():
+                self.show()
+                return True
             return False
 
-        for s in range(0,5):
+        for s in range(0,6):
             for d in range(-1,3,2):
                 self.rotate(s,d)
                 if self.solve(depth-1):
                     self.rotate(s,-d)
+                    print(colors[s], " ", d)
                     self.show()
                     return True
                 self.rotate(s,-d)
@@ -130,11 +133,22 @@ class Cube:
 
 c=Cube()
 
+if len(sys.argv)==2 and sys.argv[1]=="-t":
+    print("test")
+    c.test()
+    exit(0)
+
+try:
+    depth=int(sys.argv[1]) if len(sys.argv)>1 else 100
+except:
+    print("usage: rubik.py <depth>")
+    exit(-1)
+
 print("shuffle")
-depth=int(sys.argv[1]) if len(sys.argv)>1 else 100
 c.shuffle(depth)
 c.show()
 
 print("solve")
-c.solve(depth+1)
-
+for d in range(0,depth+1):
+    if c.solve(d):
+        break;
