@@ -55,6 +55,7 @@ class Cube:
     def solve(self):
         q = [Position(self)]
         while len(q) > 0:
+            print 'Q', len(q)
             p = q[0]
             if p.solved():
                 print "Solution: ", p.moves
