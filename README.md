@@ -1,2 +1,2 @@
 # Rubik
-A Rubik's Cube solver in Julia.
+A Rubik's Cube solver in python.
