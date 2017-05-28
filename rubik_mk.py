@@ -1,4 +1,4 @@
-import random, copy
+import random, copy, time
 
 random.seed()
 
@@ -69,10 +69,12 @@ class Cube:
         return True
 
     def solve_dfs(self, max_depth):
+        start = time.time()
         if self.solved():
             print "Solved"
             return
         Position(self).solve_dfs(max_depth)
+        print "Took", time.time() - start, "seconds"
 
 
 class Position:
