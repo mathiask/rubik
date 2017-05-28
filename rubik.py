@@ -4,8 +4,7 @@ import random
 import sys
 import time
 
-N=2
-S=N*N
+N=3
 
 # 6 planes red, blue, yellow, orange, green, white
 # 0 r: b y g w
@@ -65,9 +64,7 @@ class Cube:
     # rotate a plane counter/clockwise
     def rotate(self, s, d):
         # rotate the plane
-        #print(self.cube)
         self.cube[s]=self.cube[s][(N-1)*d:]+self.cube[s][:(N-1)*d]
-        #print(self.cube)
 
         k=[]
         # find neighbor planes
@@ -77,22 +74,17 @@ class Cube:
             p=neighbors[n].index(s)
             k.append((self.cube[n][(N-1)*p:]+self.cube[n][:(N-1)*p])[0:N])
 
-        #print(k)
-        #print(self.cube)
         # rotate one row of neighbor planes
         for i in range(0,4):
             n=neighbors[s][i]
             # find neighbor's row adjacent to the rotated plane
             p=neighbors[n].index(s)
             t=self.cube[n][(N-1)*p:]+self.cube[n][:(N-1)*p]
-            #print(t)
             # replace it by neighbor's neighbor's row
             t[0:N]=k[(i+4+d)%4]
-            #print(t)
             # put it back to its original place
-            self.cube[n]=t[S-(N-1)*p:]+t[:S-(N-1)*p]
+            self.cube[n]=t[(N-1)*(4-p):]+t[:(N-1)*(4-p)]
 
-        #print(self.cube)
         return
 
     def __init__(self):
