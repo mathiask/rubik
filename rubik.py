@@ -2,6 +2,10 @@
 
 import random
 import sys
+import time
+
+N=2
+S=N*N
 
 # 6 planes red, blue, yellow, orange, green, white
 # 0 r: b y g w
@@ -23,51 +27,83 @@ neighbors.append([0,4,3,1])
 # print planes
 colors=["R","B","Y","O","G","W"]
 
+def opposite(s):
+    return (s+3)%6
+
+def undo(s, d, ps, pd):
+    if (d==-pd and s==ps) or (N==2 and d==pd and s==opposite(ps)):
+        return True
+    return False
+
 class Cube:
-    cube = []
+    cube=[]
+    leaves=0
 
     # print cube
     def show(self) :
         for i in range(0,6):
-            sys.stdout.write(colors[self.cube[i][0]])
-            sys.stdout.write(colors[self.cube[i][1]])
+            for j in range(0,N):
+                sys.stdout.write(colors[self.cube[i][j]])
             sys.stdout.write(' ')
         sys.stdout.write('\n')
 
+        if N==3:
+            for i in range(0,6):
+                sys.stdout.write(colors[self.cube[i][4*(N-1)-1]])
+                sys.stdout.write(colors[i])
+                sys.stdout.write(colors[self.cube[i][N]])
+                sys.stdout.write(' ')
+            sys.stdout.write('\n')
+
         for i in range(0,6):
-            sys.stdout.write(colors[self.cube[i][3]])
-            sys.stdout.write(colors[self.cube[i][2]])
+            for j in range(0,N):
+                sys.stdout.write(colors[self.cube[i][3*(N-1)-j]])
             sys.stdout.write(' ')
         sys.stdout.write('\n')
-        print("==")
+        print("===")
 
     # rotate a plane counter/clockwise
     def rotate(self, s, d):
-        self.cube[s]=self.cube[s][d:]+self.cube[s][:d]
+        # rotate the plane
+        #print(self.cube)
+        self.cube[s]=self.cube[s][(N-1)*d:]+self.cube[s][:(N-1)*d]
+        #print(self.cube)
 
         k=[]
+        # find neighbor planes
         for i in range(0,4):
             n=neighbors[s][i]
+            # find neighbor's row adjacent to the rotated plane
             p=neighbors[n].index(s)
-            k.append([self.cube[n][p], self.cube[n][(p+1)%4]])
+            k.append((self.cube[n][(N-1)*p:]+self.cube[n][:(N-1)*p])[0:N])
 
+        #print(k)
+        #print(self.cube)
+        # rotate one row of neighbor planes
         for i in range(0,4):
             n=neighbors[s][i]
+            # find neighbor's row adjacent to the rotated plane
             p=neighbors[n].index(s)
-            self.cube[n][p]=k[(i+4+d)%4][0]
-            self.cube[n][(p+1)%4]=k[(i+4+d)%4][1]
+            t=self.cube[n][(N-1)*p:]+self.cube[n][:(N-1)*p]
+            #print(t)
+            # replace it by neighbor's neighbor's row
+            t[0:N]=k[(i+4+d)%4]
+            #print(t)
+            # put it back to its original place
+            self.cube[n]=t[S-(N-1)*p:]+t[:S-(N-1)*p]
 
+        #print(self.cube)
         return
 
     def __init__(self):
         # the ordered cube
         self.cube=[]
-        self.cube.append([0,0,0,0])
-        self.cube.append([1,1,1,1])
-        self.cube.append([2,2,2,2])
-        self.cube.append([3,3,3,3])
-        self.cube.append([4,4,4,4])
-        self.cube.append([5,5,5,5])
+        self.cube.append([0,0,0,0,0,0,0,0][:4*(N-1)])
+        self.cube.append([1,1,1,1,1,1,1,1][:4*(N-1)])
+        self.cube.append([2,2,2,2,2,2,2,2][:4*(N-1)])
+        self.cube.append([3,3,3,3,3,3,3,3][:4*(N-1)])
+        self.cube.append([4,4,4,4,4,4,4,4][:4*(N-1)])
+        self.cube.append([5,5,5,5,5,5,5,5][:4*(N-1)])
         return
 
     def ordered(self):
@@ -98,14 +134,21 @@ class Cube:
         return
 
     def shuffle(self, n):
+        ps=-1
+        pd=0
         for i in range(0,n):
             s=random.randint(0,5)
             d=2*random.randint(0,1)-1
+            while undo(s, d, ps, pd):
+                s=random.randint(0,5)
+                d=2*random.randint(0,1)-1
             print(colors[s], " ", d)
             self.rotate(s, d)
+            ps=s
+            pd=d
         return
 
-    def solve(self, depth):
+    def solve(self, depth, ps, pd):
         if depth==0:
             if self.ordered():
                 self.show()
@@ -114,14 +157,16 @@ class Cube:
 
         for s in range(0,6):
             for d in range(-1,3,2):
-                self.rotate(s,d)
-                if self.solve(depth-1):
+                if not undo(s, d, ps, pd):
+                    self.rotate(s,d)
+                    if self.solve(depth-1, s, d):
+                        self.rotate(s,-d)
+                        print(colors[s], " ", d)
+                        #self.show()
+                        return True
                     self.rotate(s,-d)
-                    print(colors[s], " ", d)
-                    self.show()
-                    return True
-                self.rotate(s,-d)
 
+        self.leaves+=1
         return False
 
 c=Cube()
@@ -143,5 +188,8 @@ c.show()
 
 print("solve")
 for d in range(0,depth+1):
-    if c.solve(d):
+    print(round(time.clock(),1), " start depth ", d)
+    if c.solve(d, -1, 0):
+        print(round(time.clock(),1), " solved size ", c.leaves)
+        print(round(c.leaves/time.clock()), " nodes per second")
         break;
