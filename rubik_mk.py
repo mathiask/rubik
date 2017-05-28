@@ -68,11 +68,17 @@ class Cube:
                 return False
         return True
 
+    def solve_dfs(self, max_depth):
+        if self.solved():
+            print "Solved"
+            return
+        Position(self).solve_dfs(max_depth)
+
 
 class Position:
-    def __init__(self, cube, moves = []):
+    def __init__(self, cube, moves = None):
         self.cube = cube
-        self.moves = moves
+        self.moves = [] if moves is None else moves
 
     def __str__(self):
         return str(self.moves) + '\n' + str(self.cube)
@@ -90,3 +96,24 @@ class Position:
 
     def solved(self):
         return self.cube.solved()
+
+    # solve with at least 1 move
+    def solve_dfs(self, depth):
+        for m in self.candidate_moves():
+            self.move(m)
+            if self.solved():
+                print "Solution:", self.moves
+                return True
+            if depth > 1 and self.solve_dfs(depth - 1):
+                return True
+            self.undo()
+        return False
+
+    def move(self, move):
+        self.cube.move(move[0], move[1])
+        self.moves.append(move)
+
+    def undo(self):
+        s, d = self.moves[-1]
+        self.cube.move(s, -d)
+        self.moves = self.moves[0:-1]
