@@ -2,6 +2,7 @@
 
 import random
 import sys
+import time
 
 N=2
 S=N*N
@@ -79,6 +80,7 @@ class Cube:
             # replace it by neighbor's neighbor's row
             t[0:N]=k[(i+4+d)%4]
             #print(t)
+            # put it back to its original place
             self.cube[n]=t[S-(N-1)*p:]+t[:S-(N-1)*p]
 
         #print(self.cube)
@@ -130,7 +132,7 @@ class Cube:
             self.rotate(s, d)
         return
 
-    def solve(self, depth):
+    def solve(self, depth, ps, pd):
         if depth==0:
             if self.ordered():
                 self.show()
@@ -139,13 +141,14 @@ class Cube:
 
         for s in range(0,6):
             for d in range(-1,3,2):
-                self.rotate(s,d)
-                if self.solve(depth-1):
+                if s!=ps or d!=-pd:
+                    self.rotate(s,d)
+                    if self.solve(depth-1, s, d):
+                        self.rotate(s,-d)
+                        print(colors[s], " ", d)
+                        self.show()
+                        return True
                     self.rotate(s,-d)
-                    print(colors[s], " ", d)
-                    self.show()
-                    return True
-                self.rotate(s,-d)
 
         return False
 
@@ -168,5 +171,7 @@ c.show()
 
 print("solve")
 for d in range(0,depth+1):
-    if c.solve(d):
+    print(time.clock(), " start depth ", d)
+    if c.solve(d, -1, -1):
+        print(time.clock(), " solved depth ", d)
         break;
