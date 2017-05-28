@@ -36,7 +36,8 @@ def undo(s, d, ps, pd):
     return False
 
 class Cube:
-    cube = []
+    cube=[]
+    leaves=0
 
     # print cube
     def show(self) :
@@ -161,10 +162,11 @@ class Cube:
                     if self.solve(depth-1, s, d):
                         self.rotate(s,-d)
                         print(colors[s], " ", d)
-                        self.show()
+                        #self.show()
                         return True
                     self.rotate(s,-d)
 
+        self.leaves+=1
         return False
 
 c=Cube()
@@ -186,7 +188,8 @@ c.show()
 
 print("solve")
 for d in range(0,depth+1):
-    print(time.clock(), " start depth ", d)
+    print(round(time.clock(),1), " start depth ", d)
     if c.solve(d, -1, 0):
-        print(time.clock(), " solved depth ", d)
+        print(round(time.clock(),1), " solved size ", c.leaves)
+        print(round(c.leaves/time.clock()), " nodes per second")
         break;
