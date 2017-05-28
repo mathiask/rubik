@@ -43,14 +43,7 @@ class Cube:
 
     # rotate a plane counter/clockwise
     def rotate(self, s, d):
-        if d>0:
-            t=self.cube[s][0]
-            self.cube[s][0:3]=self.cube[s][1:4]
-            self.cube[s][3]=t
-        else:
-            t=self.cube[s][3]
-            self.cube[s][1:4]=self.cube[s][0:3]
-            self.cube[s][0]=t
+        self.cube[s]=self.cube[s][d:]+self.cube[s][:d]
 
         k=[]
         for i in range(0,4):
