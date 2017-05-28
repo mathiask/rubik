@@ -27,6 +27,14 @@ neighbors.append([0,4,3,1])
 # print planes
 colors=["R","B","Y","O","G","W"]
 
+def opposite(s):
+    return (s+3)%6
+
+def undo(s, d, ps, pd):
+    if (d==-pd and s==ps) or (N==2 and d==pd and s==opposite(ps)):
+        return True
+    return False
+
 class Cube:
     cube = []
 
@@ -125,11 +133,18 @@ class Cube:
         return
 
     def shuffle(self, n):
+        ps=-1
+        pd=0
         for i in range(0,n):
             s=random.randint(0,5)
             d=2*random.randint(0,1)-1
+            while undo(s, d, ps, pd):
+                s=random.randint(0,5)
+                d=2*random.randint(0,1)-1
             print(colors[s], " ", d)
             self.rotate(s, d)
+            ps=s
+            pd=d
         return
 
     def solve(self, depth, ps, pd):
@@ -141,7 +156,7 @@ class Cube:
 
         for s in range(0,6):
             for d in range(-1,3,2):
-                if s!=ps or d!=-pd:
+                if not undo(s, d, ps, pd):
                     self.rotate(s,d)
                     if self.solve(depth-1, s, d):
                         self.rotate(s,-d)
@@ -172,6 +187,6 @@ c.show()
 print("solve")
 for d in range(0,depth+1):
     print(time.clock(), " start depth ", d)
-    if c.solve(d, -1, -1):
+    if c.solve(d, -1, 0):
         print(time.clock(), " solved depth ", d)
         break;
