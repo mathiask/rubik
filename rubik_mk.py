@@ -1,6 +1,7 @@
 import random, copy, time
 
 random.seed()
+count = 0
 
 sides = ['front', 'back', 'left', 'right', 'top', 'bottom']
 orbits= {
@@ -67,12 +68,15 @@ class Cube:
         return True
 
     def solve(self, max_depth):
+        global count
+        count = 0
         start = time.time()
         if self.solved():
             print "Solved"
             return
         Position(self).solve(max_depth)
-        print "Took", time.time() - start, "seconds"
+        t = time.time() - start
+        print "Took", t, "seconds,\n", count, "positions visited,\n", count / t if t > 0 else '?', 'positions/s.'
 
 
 
@@ -108,8 +112,10 @@ class Position:
 
     # solve with at least 1 move
     def solve(self, depth):
+        global count
         for m in self.candidate_moves():
             self.move(m)
+            count = count + 1
             if self.solved():
                 print "Solution:", self.moves
                 return True
