@@ -42,17 +42,15 @@ class Cube:
         return self
 
     def shuffle(self, n):
-        for i in range(0, n):
-            s = random.choice(sides)
-            d = random.choice([-1, 1])
-            print '[', s, d, ']'
-            self.move(s, d)
+        Position(self).shuffle(n)
         return self
 
+    # only used by DFS's Position#next
     def copy(self):
         return copy.deepcopy(self)
 
-    def solve(self):
+    # BFS solver (deprecated)
+    def solve_bfs(self):
         q = [Position(self)]
         while len(q) > 0:
             print 'Q', len(q)
@@ -68,13 +66,14 @@ class Cube:
                 return False
         return True
 
-    def solve_dfs(self, max_depth):
+    def solve(self, max_depth):
         start = time.time()
         if self.solved():
             print "Solved"
             return
-        Position(self).solve_dfs(max_depth)
+        Position(self).solve(max_depth)
         print "Took", time.time() - start, "seconds"
+
 
 
 class Position:
@@ -85,9 +84,12 @@ class Position:
     def __str__(self):
         return str(self.moves) + '\n' + str(self.cube)
 
-    def next(self, move):
-        c = self.cube.copy().move(move[0], move[1])
-        return Position(c, self.moves + [move])
+    def shuffle(self, n):
+        for i in range(0, n):
+            m = random.choice(self.candidate_moves())
+            print m
+            self.move(m)
+        return self
 
     def candidate_moves(self):
         if len(self.moves) == 0:
@@ -96,17 +98,22 @@ class Position:
             sx, dx = self.moves[-1]
             return [[s, d] for s in sides for d in [1, -1] if s != sx or d != -dx]
 
+    # only used by the BFS solver
+    def next(self, move):
+        c = self.cube.copy().move(move[0], move[1])
+        return Position(c, self.moves + [move])
+
     def solved(self):
         return self.cube.solved()
 
     # solve with at least 1 move
-    def solve_dfs(self, depth):
+    def solve(self, depth):
         for m in self.candidate_moves():
             self.move(m)
             if self.solved():
                 print "Solution:", self.moves
                 return True
-            if depth > 1 and self.solve_dfs(depth - 1):
+            if depth > 1 and self.solve(depth - 1):
                 return True
             self.undo()
         return False
