@@ -3,6 +3,9 @@
 import random
 import sys
 
+N=2
+S=N*N
+
 # 6 planes red, blue, yellow, orange, green, white
 # 0 r: b y g w
 # 1 b: y r w o
@@ -29,45 +32,67 @@ class Cube:
     # print cube
     def show(self) :
         for i in range(0,6):
-            sys.stdout.write(colors[self.cube[i][0]])
-            sys.stdout.write(colors[self.cube[i][1]])
+            for j in range(0,N):
+                sys.stdout.write(colors[self.cube[i][j]])
             sys.stdout.write(' ')
         sys.stdout.write('\n')
 
+        if N==3:
+            for i in range(0,6):
+                sys.stdout.write(colors[self.cube[i][4*(N-1)-1]])
+                sys.stdout.write(colors[i])
+                sys.stdout.write(colors[self.cube[i][N]])
+                sys.stdout.write(' ')
+            sys.stdout.write('\n')
+
         for i in range(0,6):
-            sys.stdout.write(colors[self.cube[i][3]])
-            sys.stdout.write(colors[self.cube[i][2]])
+            for j in range(0,N):
+                sys.stdout.write(colors[self.cube[i][3*(N-1)-j]])
             sys.stdout.write(' ')
         sys.stdout.write('\n')
-        print("==")
+        print("===")
 
     # rotate a plane counter/clockwise
     def rotate(self, s, d):
-        self.cube[s]=self.cube[s][d:]+self.cube[s][:d]
+        # rotate the plane
+        #print(self.cube)
+        self.cube[s]=self.cube[s][(N-1)*d:]+self.cube[s][:(N-1)*d]
+        #print(self.cube)
 
         k=[]
+        # find neighbor planes
         for i in range(0,4):
             n=neighbors[s][i]
+            # find neighbor's row adjacent to the rotated plane
             p=neighbors[n].index(s)
-            k.append([self.cube[n][p], self.cube[n][(p+1)%4]])
+            k.append((self.cube[n][(N-1)*p:]+self.cube[n][:(N-1)*p])[0:N])
 
+        #print(k)
+        #print(self.cube)
+        # rotate one row of neighbor planes
         for i in range(0,4):
             n=neighbors[s][i]
+            # find neighbor's row adjacent to the rotated plane
             p=neighbors[n].index(s)
-            self.cube[n][p]=k[(i+4+d)%4][0]
-            self.cube[n][(p+1)%4]=k[(i+4+d)%4][1]
+            t=self.cube[n][(N-1)*p:]+self.cube[n][:(N-1)*p]
+            #print(t)
+            # replace it by neighbor's neighbor's row
+            t[0:N]=k[(i+4+d)%4]
+            #print(t)
+            self.cube[n]=t[S-(N-1)*p:]+t[:S-(N-1)*p]
 
+        #print(self.cube)
         return
 
     def __init__(self):
         # the ordered cube
         self.cube=[]
-        self.cube.append([0,0,0,0])
-        self.cube.append([1,1,1,1])
-        self.cube.append([2,2,2,2])
-        self.cube.append([3,3,3,3])
-        self.cube.append([4,4,4,4])
-        self.cube.append([5,5,5,5])
+        self.cube.append([0,0,0,0,0,0,0,0][:4*(N-1)])
+        self.cube.append([1,1,1,1,1,1,1,1][:4*(N-1)])
+        self.cube.append([2,2,2,2,2,2,2,2][:4*(N-1)])
+        self.cube.append([3,3,3,3,3,3,3,3][:4*(N-1)])
+        self.cube.append([4,4,4,4,4,4,4,4][:4*(N-1)])
+        self.cube.append([5,5,5,5,5,5,5,5][:4*(N-1)])
         return
 
     def ordered(self):
